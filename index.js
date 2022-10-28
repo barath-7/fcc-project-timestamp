@@ -1,9 +1,7 @@
-// index.js
-// where your node app starts
-
-// init project
 var express = require('express');
 var app = express();
+require('dotenv').config()
+
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
@@ -24,6 +22,37 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+//route to handle no date in params
+app.get('/api/',(req,res)=>{
+    return res.json({
+      "unix":new Date().getTime(),
+      "utc":new Date().toUTCString()
+    })
+})
+
+app.get("/api/:date", (req, res) => {
+  let dateParams = req.params.date || "";
+
+  let isValidDate = new Date(dateParams);
+
+  if (isValidDate == "Invalid Date") {
+    if (!Number(dateParams)) {
+      return res.json({
+        error: "Invalid Date",
+      });
+    } else {
+      return res.json({
+        unix: Number(dateParams),
+        utc: new Date(Number(dateParams)).toUTCString(),
+      });
+    }
+  } else {
+    return res.json({
+      unix: new Date(dateParams).getTime(),
+      utc: new Date(dateParams).toUTCString(),
+    });
+  }
+});
 
 
 // listen for requests :)
